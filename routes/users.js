@@ -1,21 +1,18 @@
 const router = require("koa-router")();
-const userCtl = require("../controller/users");
+const { login } = require("../controller/users");
 
 router.prefix("/users");
 
-// 添加系统用户
-router.post("/add", userCtl.userAdd);
+// 用户登录
+router.post("/login", login);
 
-// 删除操作
-router.post("/del", userCtl.userDel);
+// // 用户注册
+// router.post();
 
-//修改操作
-router.post("/update", userCtl.userUpdate);
+// //修改操作
+// router.post();
 
-//查询全部
-router.get("/find", userCtl.userFind);
-
-// 查询某个id
-router.get("/find/:id", userCtl.userfindOne);
+// //查询全部
+// router.get();
 
 module.exports = router;

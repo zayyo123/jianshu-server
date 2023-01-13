@@ -9,8 +9,6 @@ const MongoConnect = require("./db");
 
 // 连接数据库
 MongoConnect();
-
-const index = require("./routes/index");
 const users = require("./routes/users");
 
 // error handler
@@ -41,7 +39,7 @@ app.use(async (ctx, next) => {
 });
 
 // routes
-app.use(index.routes(), index.allowedMethods());
+
 app.use(users.routes(), users.allowedMethods());
 
 // error-handling

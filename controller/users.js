@@ -1,42 +1,42 @@
-const { User } = require("../models");
-const crud = require("./crudUtil");
+const jwt = require("jsonwebtoken");
+const Users = require("../models/users");
 
-// 添加系统用户
-const userAdd = async (ctx) => {
-  let { username = "", pwd = "" } = ctx.request.body;
-  await crud.add(User, { username, pwd }, ctx);
+// 用户登录
+const login = async (ctx) => {
+  // 获取浏览器发送的用户名和密码
+  let { username, pwd } = ctx.request.body;
+  // 查找在数据库中是否存在
+  await Users.findOne({ username, pwd })
+    .then((rel) => {
+      if (rel) {
+        let token = jwt.sign(
+          { username: rel.username, _id: rel._id },
+          // jwt的签名
+          "jianshu-serve-jwt",
+          { expiresIn: 3600 * 24 * 7 }
+        );
+
+        ctx.body = {
+          code: 200,
+          msg: "登录成功",
+          token,
+        };
+      } else {
+        ctx.body = {
+          code: 300,
+          msg: "登录失败",
+          token,
+        };
+      }
+    })
+    .catch((err) => {
+      ctx.body = {
+        code: 500,
+        msg: "登录出现异常",
+      };
+    });
 };
 
-// 删除操作
-const userDel = async (ctx, next) => {
-  let { _id } = ctx.request.body;
-  await crud.del(User, { _id }, ctx);
-};
-
-//修改操作
-const userUpdate = async (ctx, next) => {
-  let params = ctx.request.body;
-  await crud.update(
-    User,
-    { _id: params._id },
-    { username: params.username, pwd: params.pwd },
-    ctx
-  );
-};
-
-//查询全部
-const userFind = async (ctx, next) => {
-  await crud.find(User, null, ctx);
-}
-
-// 查询某个id
-const userfindOne = async (ctx, next) => {
-  await crud.find(User, { _id: ctx.params.id }, ctx);
-};
 module.exports = {
-  userAdd,
-  userDel,
-  userUpdate,
-  userFind,
-  userfindOne,
+  login,
 };
