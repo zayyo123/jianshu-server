@@ -15,7 +15,7 @@ const login = async (ctx) => {
         let token = jwt.sign(
           { username: rel.username, _id: rel._id },
           // jwt的签名
-          "jianshu-serve-jwt",
+          "jianshu-server-jwt",
           { expiresIn: 3600 * 24 * 7 }
         );
         ctx.body = {
@@ -26,7 +26,7 @@ const login = async (ctx) => {
       } else {
         ctx.body = {
           code: 300,
-          msg: "登录失败",
+          msg: "登录失败,用户名或密码错误",
         };
       }
     })
@@ -85,7 +85,48 @@ const register = async (ctx) => {
     });
 };
 
+/**
+ * 验证用户登录
+ */
+const verify = async (ctx) => {
+  // 获取浏览器发送的token
+  let token = ctx.header.authorization;
+  // 裁剪token前面的头段
+  token = token.replace("Bearer ", "");
+  try {
+    let result = jwt.verify(token, "jianshu-server-jwt");
+    await Users.findOne({ _id: result._id })
+      .then((rel) => {
+        console.log(rel);
+        if (rel) {
+          ctx.body = {
+            code: 200,
+            msg: "用户认证成功",
+            user: rel,
+          };
+        } else {
+          ctx.body = {
+            code: 300,
+            msg: "用户认证失败",
+          };
+        }
+      })
+      .catch((err) => {
+        ctx.body = {
+          code: 500,
+          msg: "用户认证出现异常1",
+        };
+      });
+  } catch (err) {
+    ctx.body = {
+      code: 500,
+      msg: "用户认证出现异常2",
+    };
+  }
+};
+
 module.exports = {
   login,
   register,
+  verify,
 };

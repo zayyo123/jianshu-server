@@ -6,6 +6,7 @@ const onerror = require("koa-onerror");
 const bodyparser = require("koa-bodyparser");
 const logger = require("koa-logger");
 const MongoConnect = require("./db");
+const koajwt = require("koa-jwt");
 
 // 连接数据库
 MongoConnect();
@@ -27,6 +28,16 @@ app.use(require("koa-static")(__dirname + "/public"));
 app.use(
   views(__dirname + "/views", {
     extension: "pug",
+  })
+);
+
+// 使用koa-jwt进是否已登录的验证
+app.use(
+  koajwt({
+    // 秘钥
+    secret: "jianshu-server-jwt",
+  }).unless({
+    path: [/^\/users\/login/, /^\/users\/register/],
   })
 );
 
