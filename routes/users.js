@@ -1,13 +1,13 @@
 const router = require("koa-router")();
-const { login } = require("../controller/users");
+const { login, register } = require("../controller/users");
 
 router.prefix("/users");
 
 // 用户登录
 router.post("/login", login);
 
-// // 用户注册
-// router.post();
+// 用户注册
+router.post("/register", register);
 
 // //修改操作
 // router.post();
