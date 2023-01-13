@@ -10,6 +10,7 @@ const login = async (ctx) => {
   // 查找在数据库中是否存在
   await Users.findOne({ username, pwd })
     .then((rel) => {
+      console.log(rel);
       if (rel) {
         let token = jwt.sign(
           { username: rel.username, _id: rel._id },
@@ -17,7 +18,6 @@ const login = async (ctx) => {
           "jianshu-serve-jwt",
           { expiresIn: 3600 * 24 * 7 }
         );
-
         ctx.body = {
           code: 200,
           msg: "登录成功",
@@ -27,7 +27,6 @@ const login = async (ctx) => {
         ctx.body = {
           code: 300,
           msg: "登录失败",
-          token,
         };
       }
     })
@@ -88,5 +87,5 @@ const register = async (ctx) => {
 
 module.exports = {
   login,
-  register
+  register,
 };
