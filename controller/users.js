@@ -10,7 +10,6 @@ const login = async (ctx) => {
   // 查找在数据库中是否存在
   await Users.findOne({ username, pwd })
     .then((rel) => {
-      console.log(rel);
       if (rel) {
         let token = jwt.sign(
           { username: rel.username, _id: rel._id },
@@ -93,7 +92,9 @@ const verify = async (ctx) => {
   let token = ctx.header.authorization;
   // 裁剪token前面的头段
   token = token.replace("Bearer ", "");
+
   try {
+    // 验证浏览器发来的token
     let result = jwt.verify(token, "jianshu-server-jwt");
     await Users.findOne({ _id: result._id })
       .then((rel) => {
@@ -125,8 +126,38 @@ const verify = async (ctx) => {
   }
 };
 
+/**
+ * 修改用户密码
+ */
+const updatePwd = async (ctx) => {
+  // 获取浏览器发送的用户名和密码
+  let { username, pwd } = ctx.request.body;
+  // 查找在数据库中是否存在
+  await Users.updateOne({ username }, { pwd })
+    .then((rel) => {
+      console.log(rel.modifiedCount);
+      if (rel.modifiedCount == 1) {
+        ctx.body = {
+          code: 200,
+          msg: "密码修改成功",
+        };
+      } else {
+        ctx.body = {
+          code: 300,
+          msg: "密码修改失败",
+        };
+      }
+    })
+    .catch((err) => {
+      ctx.body = {
+        code: 500,
+        msg: "修改密码出现异常",
+      };
+    });
+};
 module.exports = {
   login,
   register,
   verify,
+  updatePwd,
 };

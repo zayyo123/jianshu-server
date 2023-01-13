@@ -1,5 +1,5 @@
 const router = require("koa-router")();
-const { login, register, verify } = require("../controller/users");
+const { login, register, verify, updatePwd } = require("../controller/users");
 
 router.prefix("/users");
 
@@ -12,7 +12,7 @@ router.post("/register", register);
 //用户验证
 router.post("/verify", verify);
 
-// //查询全部
-// router.get();
+//修改密码
+router.post("/updatePwd", updatePwd);
 
 module.exports = router;
