@@ -27,7 +27,7 @@ const userUpdate = async (ctx, next) => {
 //查询全部
 const userFind = async (ctx, next) => {
   await crud.find(User, null, ctx);
-};
+}
 
 // 查询某个id
 const userfindOne = async (ctx, next) => {
